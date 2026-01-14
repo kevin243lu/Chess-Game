@@ -1,25 +1,27 @@
 import pygame
+from Board import Board
 
 pygame.init()
-WIDTH = 1000
-HEIGHT = 900
-clock = pygame.time.Clock()
-#font = pygame.font.Font('freesansbold.ttf', 20)
-#medium_font = pygame.font.Font('freesansbold.ttf', 40)
-#big_font = pygame.font.Font('freesansbold.ttf', 50)
+WINDOW_SIZE = (600, 600)
+SCREEN = pygame.display.set_mode(WINDOW_SIZE)
 
+board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1])
 
-screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption('Chess Game')
+def draw(display):
+    display.fill('white')
+    board.draw(display)
+    pygame.display.update()
 
-clock.tick(60)
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    pygame.display.flip()
-
-pygame.quit()
+if __name__ == '__main__':
+    running = True
+    while running:
+        mx, my = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            # quits the game if the user presses the close button
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # if the mouse is clicked
+                if event.button == 1:
+                    board.handle_click(mx, my)
+                    
