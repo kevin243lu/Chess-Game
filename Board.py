@@ -37,5 +37,52 @@ class Board:
                 output.append(Square(x, y, self.tile_width, self.tile_height))
         return output
     
+    def get_square_from_pos(self, pos):
+        for square in self.squares:
+            if (square.x, square.y) == (pos[0], pos[1]):
+                return square
+    
+    def get_piece_from_pos(self, pos):
+        return self.get_square_from_pos(pos).occupying_piece
+    
     def setup_board(self):
-        
+        for y, row in enumerate(self.config):
+            for x, piece in enumerate(row):
+                if piece != '':
+                    square = self.get_square_from_pos((x, y))
+                    # looking to see what piece the square has
+                    if piece[1] == 'R':
+                        square.occupying_piece = Rook((x, y), 'white' if piece[0] == 'w' else 'black', self)
+                    elif piece[1] == 'N':
+                        square.occupying_piece = Knight((x, y), 'white' if piece[0] == 'w' else 'black', self)
+                    elif piece[1] == 'B':
+                        square.occupying_piece = Bishop((x, y), 'white' if piece[0] == 'w' else 'black', self)
+                    elif piece[1] == 'Q':
+                        square.occupying_piece = Queen((x, y), 'white' if piece[0] == 'w' else 'black', self)
+                    elif piece[1] == 'K':
+                        square.occupying_piece = King((x, y), 'white' if piece[0] == 'w' else 'black', self)
+                    elif piece[1] == 'P':
+                        square.occupying_piece = Pawn((x, y), 'white' if piece[0] == 'w' else 'black', self)
+
+    def handle_click(self, mx, my):
+        # allows us to click inside the game window
+        x = mx // self.tile_width
+        y = my // self.tile_height
+        clicked_square = self.get_square_from_pos((x, y))
+        if self.selected_piece is None: # shows the piece you have clicked on
+            if clicked_square.occupying_piece is not None:
+                if clicked_square.occupying_piece.color == self.turn:
+                    self.selected_piece = clicked_square.occupying_piece
+        elif self.selected_piece.move(self, clicked_square):
+            self.turn = 'white' if self.turn == 'black' else 'black'
+        elif clicked_square.occupying_piece is not None:
+            if clicked_square.occupying_piece.color == self.turn:
+                self.selected_piece = clicked_square.occupying_piece
+
+    # game state checker
+    def is_in_check(self, color, pos):
+        output = False
+        king_pos = None
+        changing_piece = None
+        old_square = None
+        new_square = None
