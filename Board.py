@@ -86,3 +86,10 @@ class Board:
         changing_piece = None
         old_square = None
         new_square = None
+        new_square_old_piece = None
+        if board_change is not None:
+            for square in self.squares:
+                if square.pos == board_change[0]:
+                    changing_piece = square.occupying_piece
+                    old_square = square
+                    
